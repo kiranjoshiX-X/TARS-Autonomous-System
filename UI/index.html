@@ -1,0 +1,1811 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<title>TARS // NEURAL COMMAND CORE</title>
+
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+background:#02070d;
+overflow:hidden;
+font-family:'Share Tech Mono';
+color:#00d9ff;
+height:100vh;
+position:relative;
+}
+
+/* ================= CINEMATIC BOOT SCREEN ================= */
+
+#bootScreen{
+position:fixed;
+inset:0;
+
+background:
+radial-gradient(circle at center,
+rgba(0,180,255,0.08),
+black 60%);
+
+z-index:999999;
+
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+
+overflow:hidden;
+
+animation:bootFadeOut 2s ease forwards;
+animation-delay:9s;
+}
+
+@keyframes bootFadeOut{
+to{
+opacity:0;
+visibility:hidden;
+pointer-events:none;
+}
+}
+
+#bootBackgroundPulse{
+position:absolute;
+width:1400px;
+height:1400px;
+border-radius:50%;
+
+background:
+radial-gradient(circle,
+rgba(0,217,255,0.12),
+transparent 70%);
+
+animation:bgPulse 4s infinite;
+}
+
+@keyframes bgPulse{
+50%{
+transform:scale(1.12);
+opacity:.4;
+}
+}
+
+#bootScan{
+position:absolute;
+top:-100%;
+left:0;
+width:100%;
+height:220px;
+
+background:
+linear-gradient(
+to bottom,
+transparent,
+rgba(0,217,255,0.08),
+transparent
+);
+
+animation:scanMove 4s linear infinite;
+}
+
+@keyframes scanMove{
+to{
+top:120%;
+}
+}
+
+#bootCoreWrap{
+position:relative;
+width:260px;
+height:260px;
+margin-bottom:35px;
+
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+#bootCoreOuter{
+position:absolute;
+width:260px;
+height:260px;
+border-radius:50%;
+border:1px solid rgba(0,217,255,0.15);
+
+animation:spin 12s linear infinite;
+
+box-shadow:
+0 0 40px rgba(0,217,255,0.15);
+}
+
+#bootCoreMiddle{
+position:absolute;
+width:190px;
+height:190px;
+border-radius:50%;
+border:2px solid rgba(0,217,255,0.3);
+
+animation:spinReverse 8s linear infinite;
+}
+
+#bootCoreInner{
+position:absolute;
+width:90px;
+height:90px;
+border-radius:50%;
+
+background:#00d9ff;
+
+filter:blur(18px);
+
+animation:corePulseBoot 2s infinite;
+
+box-shadow:
+0 0 50px #00d9ff,
+0 0 100px rgba(0,217,255,0.4);
+}
+
+@keyframes corePulseBoot{
+50%{
+transform:scale(1.15);
+opacity:.6;
+}
+}
+
+@keyframes spin{
+to{
+transform:rotate(360deg);
+}
+}
+
+@keyframes spinReverse{
+to{
+transform:rotate(-360deg);
+}
+}
+
+#bootPercent{
+position:absolute;
+font-family:'Orbitron';
+font-size:38px;
+font-weight:900;
+letter-spacing:4px;
+
+text-shadow:
+0 0 20px #00d9ff;
+
+animation:percentFlicker 2s infinite;
+}
+
+@keyframes percentFlicker{
+50%{
+opacity:.7;
+}
+}
+
+#bootLogo{
+font-family:'Orbitron';
+font-size:44px;
+letter-spacing:8px;
+margin-bottom:15px;
+
+text-shadow:
+0 0 20px #00d9ff,
+0 0 60px #00d9ff;
+
+animation:flicker 2s infinite;
+}
+
+#bootSub{
+font-size:14px;
+letter-spacing:6px;
+opacity:.8;
+margin-bottom:30px;
+}
+
+#bootProgressWrap{
+width:500px;
+max-width:80%;
+height:12px;
+
+border-radius:20px;
+
+overflow:hidden;
+
+background:
+rgba(255,255,255,0.05);
+
+margin-bottom:30px;
+
+border:
+1px solid rgba(0,217,255,0.2);
+}
+
+#bootProgressBar{
+width:0%;
+height:100%;
+
+background:
+linear-gradient(
+90deg,
+#004455,
+#00d9ff,
+#7df9ff
+);
+
+box-shadow:
+0 0 20px #00d9ff;
+
+transition:.3s;
+}
+
+#bootLogs{
+width:760px;
+max-width:90%;
+height:220px;
+
+overflow:hidden;
+
+padding:22px;
+
+background:
+rgba(0,217,255,0.03);
+
+border:
+1px solid rgba(0,217,255,0.12);
+
+font-size:14px;
+line-height:2;
+
+box-shadow:
+0 0 40px rgba(0,217,255,0.08);
+
+backdrop-filter:blur(10px);
+}
+
+#bootWave{
+display:flex;
+align-items:flex-end;
+justify-content:center;
+gap:4px;
+
+height:90px;
+
+margin-top:30px;
+}
+
+.bootBar{
+width:6px;
+height:20px;
+
+border-radius:20px;
+
+background:#00d9ff;
+
+box-shadow:
+0 0 10px #00d9ff;
+
+animation:bootWaveAnim 1s infinite ease-in-out;
+}
+
+.bootBar:nth-child(odd){
+animation-delay:.2s;
+}
+
+.bootBar:nth-child(even){
+animation-delay:.5s;
+}
+
+@keyframes bootWaveAnim{
+50%{
+height:75px;
+opacity:.4;
+}
+}
+
+#bootWarning{
+margin-top:25px;
+
+font-size:18px;
+letter-spacing:5px;
+
+color:#ff5555;
+
+text-shadow:
+0 0 18px red;
+
+animation:warningPulse 1.5s infinite;
+}
+
+#bootFooter{
+position:absolute;
+bottom:30px;
+
+font-size:12px;
+letter-spacing:5px;
+
+opacity:.5;
+}
+
+@keyframes flicker{
+0%,18%,22%,25%,53%,57%,100%{
+opacity:1;
+}
+20%,24%,55%{
+opacity:.3;
+}
+}
+
+@keyframes warningPulse{
+50%{
+opacity:.45;
+transform:scale(1.03);
+}
+}
+
+/* ================= GLITCH ================= */
+
+.glitch{
+animation:glitchAnim .15s linear;
+}
+
+@keyframes glitchAnim{
+0%{
+transform:translate(0px,0px);
+filter:hue-rotate(0deg);
+}
+25%{
+transform:translate(3px,-2px);
+}
+50%{
+transform:translate(-2px,2px);
+filter:hue-rotate(25deg);
+}
+75%{
+transform:translate(2px,1px);
+}
+100%{
+transform:translate(0px,0px);
+filter:hue-rotate(0deg);
+}
+}
+
+/* ================= BACKGROUND ================= */
+
+body::before{
+content:"";
+position:absolute;
+inset:0;
+
+background:
+radial-gradient(circle at center, rgba(0,200,255,0.08), transparent 60%),
+linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+
+background-size:
+100% 100%,
+40px 40px,
+40px 40px;
+
+animation:gridMove 10s linear infinite;
+
+z-index:-5;
+}
+
+@keyframes gridMove{
+from{transform:translateY(0);}
+to{transform:translateY(40px);}
+}
+
+body::after{
+content:"";
+position:absolute;
+inset:0;
+
+background:
+linear-gradient(
+transparent 50%,
+rgba(0,0,0,0.2) 51%
+);
+
+background-size:100% 4px;
+
+pointer-events:none;
+opacity:.2;
+z-index:100;
+}
+
+#particles{
+position:absolute;
+inset:0;
+overflow:hidden;
+z-index:-4;
+}
+
+.particle{
+position:absolute;
+width:2px;
+height:2px;
+background:#00d9ff;
+border-radius:50%;
+opacity:.6;
+animation:float linear infinite;
+}
+
+@keyframes float{
+from{
+transform:translateY(100vh);
+opacity:0;
+}
+20%{
+opacity:.7;
+}
+to{
+transform:translateY(-10vh);
+opacity:0;
+}
+}
+
+/* ================= MAIN ================= */
+
+.container{
+display:grid;
+grid-template-columns:280px 1fr 360px;
+height:100vh;
+}
+
+.left{
+border-right:1px solid rgba(0,217,255,0.2);
+padding:20px;
+background:rgba(0,10,20,0.45);
+backdrop-filter:blur(10px);
+overflow:hidden;
+}
+
+.center{
+position:relative;
+overflow:hidden;
+}
+
+.right{
+border-left:1px solid rgba(0,217,255,0.2);
+padding:20px;
+background:rgba(0,10,20,0.45);
+backdrop-filter:blur(10px);
+overflow:hidden;
+}
+
+.title{
+font-family:'Orbitron';
+font-size:24px;
+font-weight:900;
+letter-spacing:3px;
+
+margin-bottom:20px;
+
+text-shadow:
+0 0 10px #00d9ff,
+0 0 30px #00d9ff;
+}
+
+/* ================= RADAR ================= */
+
+#radar{
+width:100%;
+height:260px;
+border-radius:15px;
+background:black;
+border:1px solid rgba(0,217,255,0.2);
+
+box-shadow:
+0 0 30px rgba(0,217,255,0.15),
+inset 0 0 30px rgba(0,217,255,0.08);
+}
+
+/* ================= STATS ================= */
+
+.statsGrid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:14px;
+margin-top:20px;
+}
+
+.statBox{
+padding:16px;
+border:1px solid rgba(0,217,255,0.15);
+background:rgba(0,217,255,0.03);
+border-radius:15px;
+box-shadow:0 0 20px rgba(0,217,255,0.04);
+transition:.4s;
+}
+
+.statBox:hover{
+transform:translateY(-2px);
+box-shadow:0 0 25px rgba(0,217,255,0.12);
+}
+
+.statTitle{
+font-size:12px;
+opacity:.8;
+margin-bottom:8px;
+letter-spacing:2px;
+}
+
+.statValue{
+font-size:26px;
+font-family:'Orbitron';
+}
+
+/* ================= FEED ================= */
+
+.feed{
+margin-top:25px;
+font-size:13px;
+line-height:2;
+opacity:.85;
+height:260px;
+overflow:hidden;
+}
+
+/* ================= CHAT ================= */
+
+#chat{
+position:absolute;
+left:35px;
+right:35px;
+top:35px;
+bottom:180px;
+overflow:auto;
+padding-right:10px;
+}
+
+.msg{
+margin-bottom:16px;
+padding:15px;
+background:rgba(0,217,255,0.04);
+border-left:2px solid #00d9ff;
+box-shadow:0 0 15px rgba(0,217,255,0.05);
+animation:msgFade .3s ease;
+}
+
+@keyframes msgFade{
+from{
+opacity:0;
+transform:translateY(10px);
+}
+to{
+opacity:1;
+transform:translateY(0);
+}
+}
+
+.typing{
+display:inline-block;
+border-right:2px solid #00d9ff;
+white-space:pre-wrap;
+animation:cursorBlink .7s infinite;
+}
+
+@keyframes cursorBlink{
+50%{
+border-color:transparent;
+}
+}
+
+/* ================= INPUT ================= */
+
+.input{
+position:absolute;
+left:35px;
+right:35px;
+bottom:35px;
+display:flex;
+gap:12px;
+}
+
+input{
+flex:1;
+padding:18px;
+background:rgba(0,0,0,0.45);
+border:1px solid rgba(0,217,255,0.3);
+color:#00d9ff;
+font-size:18px;
+outline:none;
+border-radius:15px;
+transition:.3s;
+z-index:5;
+position:relative;
+}
+
+input:focus{
+box-shadow:0 0 25px rgba(0,217,255,0.2);
+}
+
+button{
+width:170px;
+background:#03141d;
+border:1px solid rgba(0,217,255,0.4);
+color:#00d9ff;
+font-family:'Orbitron';
+font-size:16px;
+cursor:pointer;
+border-radius:15px;
+transition:.3s;
+z-index:5;
+position:relative;
+}
+
+button:hover{
+background:#00d9ff;
+color:black;
+box-shadow:0 0 25px #00d9ff;
+}
+
+#micBtn{
+width:85px;
+font-size:28px;
+}
+
+#micBtn.listening{
+background:linear-gradient(
+145deg,
+rgba(255,0,80,0.25),
+rgba(255,0,80,0.08)
+);
+
+border-color:#ff4d7a;
+color:#ff7ea1;
+
+animation:micPulse 1s infinite;
+
+box-shadow:
+0 0 20px rgba(255,0,80,0.4),
+0 0 50px rgba(255,0,80,0.2);
+}
+
+@keyframes micPulse{
+50%{
+transform:scale(1.08);
+}
+}
+
+/* ================= THINKING ================= */
+
+.thinking{
+position:absolute;
+top:18px;
+right:22px;
+font-size:12px;
+letter-spacing:3px;
+opacity:.8;
+animation:blink 1s infinite;
+}
+
+@keyframes blink{
+50%{
+opacity:.2;
+}
+}
+
+/* ================= VOICE OVERLAY ================= */
+
+#voiceOverlay{
+position:absolute;
+left:50%;
+bottom:120px;
+transform:translateX(-50%);
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:15px;
+opacity:0;
+pointer-events:none;
+transition:.4s;
+}
+
+#voiceOverlay.active{
+opacity:1;
+}
+
+.voiceRing{
+width:120px;
+height:120px;
+border-radius:50%;
+border:2px solid rgba(0,217,255,0.3);
+
+box-shadow:
+0 0 30px rgba(0,217,255,0.15),
+inset 0 0 30px rgba(0,217,255,0.08);
+
+animation:ringSpin 6s linear infinite;
+position:relative;
+}
+
+.voiceRing::before{
+content:"";
+position:absolute;
+width:50px;
+height:50px;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+background:#00d9ff;
+border-radius:50%;
+filter:blur(18px);
+opacity:.7;
+animation:ringPulse 2s infinite;
+}
+
+@keyframes ringSpin{
+to{transform:rotate(360deg);}
+}
+
+@keyframes ringPulse{
+50%{
+transform:translate(-50%,-50%) scale(1.25);
+opacity:.4;
+}
+}
+
+/* ================= CORE ================= */
+
+.core{
+width:240px;
+height:240px;
+margin:auto;
+margin-top:30px;
+border-radius:50%;
+position:relative;
+display:flex;
+align-items:center;
+justify-content:center;
+border:2px solid rgba(0,217,255,0.2);
+
+box-shadow:
+0 0 50px rgba(0,217,255,0.15),
+inset 0 0 50px rgba(0,217,255,0.1);
+
+animation:corePulse 4s infinite;
+}
+
+.core::before{
+content:"";
+position:absolute;
+width:90px;
+height:90px;
+background:#00d9ff;
+border-radius:50%;
+filter:blur(20px);
+animation:innerPulse 2s infinite;
+}
+
+.core::after{
+content:"";
+position:absolute;
+width:180px;
+height:180px;
+border:1px solid rgba(0,217,255,0.15);
+border-radius:50%;
+animation:spin 12s linear infinite;
+}
+
+@keyframes innerPulse{
+50%{
+transform:scale(1.15);
+opacity:.7;
+}
+}
+
+@keyframes corePulse{
+50%{
+transform:scale(1.02);
+}
+}
+
+/* ================= AUDIO ================= */
+
+#audio{
+height:100px;
+display:flex;
+align-items:flex-end;
+justify-content:center;
+gap:4px;
+margin-top:35px;
+}
+
+.audioBar{
+width:5px;
+height:10px;
+background:#00d9ff;
+border-radius:10px;
+box-shadow:0 0 10px #00d9ff;
+}
+
+/* ================= DIAGNOSTICS ================= */
+
+#diagnostics{
+margin-top:30px;
+height:160px;
+overflow:hidden;
+font-size:12px;
+line-height:1.8;
+opacity:.75;
+}
+
+.diagnosticLine{
+animation:diagFade .4s ease;
+}
+
+@keyframes diagFade{
+from{
+opacity:0;
+transform:translateY(6px);
+}
+to{
+opacity:1;
+transform:translateY(0);
+}
+}
+
+/* ================= TELEMETRY ================= */
+
+.telemetry{
+margin-top:30px;
+line-height:2.2;
+font-size:15px;
+}
+
+/* ================= ALERT ================= */
+
+.alert{
+margin-top:25px;
+padding:14px;
+border:1px solid rgba(255,80,80,0.3);
+background:rgba(255,0,0,0.08);
+border-radius:12px;
+color:#ff7b7b;
+animation:alertBlink 2s infinite;
+}
+
+@keyframes alertBlink{
+50%{
+opacity:.5;
+}
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- ================= BOOT SCREEN ================= -->
+
+<div id="bootScreen">
+
+<div id="bootBackgroundPulse"></div>
+
+<div id="bootScan"></div>
+
+<div id="bootCoreWrap">
+
+<div id="bootCoreOuter"></div>
+
+<div id="bootCoreMiddle"></div>
+
+<div id="bootCoreInner"></div>
+
+<div id="bootPercent">0%</div>
+
+</div>
+
+<div id="bootLogo">
+TARS // NEURAL COMMAND SYSTEM
+</div>
+
+<div id="bootSub">
+INITIALIZING AUTONOMOUS CORE
+</div>
+
+<div id="bootProgressWrap">
+
+<div id="bootProgressBar"></div>
+
+</div>
+
+<div id="bootLogs"></div>
+
+<div id="bootWave">
+
+<div class="bootBar"></div>
+<div class="bootBar"></div>
+<div class="bootBar"></div>
+<div class="bootBar"></div>
+<div class="bootBar"></div>
+<div class="bootBar"></div>
+<div class="bootBar"></div>
+<div class="bootBar"></div>
+<div class="bootBar"></div>
+<div class="bootBar"></div>
+<div class="bootBar"></div>
+<div class="bootBar"></div>
+
+</div>
+
+<div id="bootWarning">
+WARNING :: SARCASM LIMITER OFFLINE
+</div>
+
+<div id="bootFooter">
+OPERATOR DETECTED :: AZAZEL
+</div>
+
+</div>
+
+<div id="particles"></div>
+
+<div class="container">
+
+<!-- LEFT -->
+
+<div class="left">
+
+<div class="title">TACTICAL</div>
+
+<canvas id="radar"></canvas>
+
+<div class="statsGrid">
+
+<div class="statBox">
+<div class="statTitle">CPU</div>
+<div class="statValue" id="cpuText">72%</div>
+</div>
+
+<div class="statBox">
+<div class="statTitle">POWER</div>
+<div class="statValue" id="powerText">61%</div>
+</div>
+
+<div class="statBox">
+<div class="statTitle">NEURAL</div>
+<div class="statValue" id="neuralText">88%</div>
+</div>
+
+<div class="statBox">
+<div class="statTitle">TEMP</div>
+<div class="statValue" id="tempText">43°</div>
+</div>
+
+</div>
+
+<div class="feed" id="feed"></div>
+
+</div>
+
+<!-- CENTER -->
+
+<div class="center">
+
+<div class="thinking" id="thinking">
+AI THINKING...
+</div>
+
+<div id="chat"></div>
+
+<div id="voiceOverlay">
+
+<div class="voiceRing"></div>
+
+<div class="voiceText" id="voiceStatus">
+VOICE READY
+</div>
+
+</div>
+
+<div class="input">
+
+<input id="cmd" placeholder="ENTER COMMAND...">
+
+<button id="sendBtn">
+EXECUTE
+</button>
+
+<button id="micBtn">
+🎤
+</button>
+
+</div>
+
+</div>
+
+<!-- RIGHT -->
+
+<div class="right">
+
+<div class="title">TARS CORE</div>
+
+<div class="core"></div>
+
+<div id="audio"></div>
+
+<div class="telemetry">
+
+<div>MODE: <span id="mode">ACTIVE</span></div>
+<div>BATTERY: <span id="battery">98</span>%</div>
+<div>POSITION: <span id="position">0,1</span></div>
+<div>STATUS: <span id="status">OPERATIONAL</span></div>
+
+</div>
+
+<div id="diagnostics"></div>
+
+<div class="alert" id="alertBox">
+NO CRITICAL THREATS DETECTED
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+/* ================= SOCKET ================= */
+
+const socket = io();
+
+const chat = document.getElementById("chat");
+const micBtn = document.getElementById("micBtn");
+const voiceOverlay = document.getElementById("voiceOverlay");
+const voiceStatus = document.getElementById("voiceStatus");
+const cmd = document.getElementById("cmd");
+const sendBtn = document.getElementById("sendBtn");
+
+/* =========================
+   SINGLE FRIDAY VOICE PLAYER
+========================= */
+
+let fridayAudio = null;
+
+socket.on("play_voice", (data) => {
+
+    try {
+
+        if (fridayAudio) {
+            fridayAudio.pause();
+            fridayAudio.currentTime = 0;
+        }
+
+        fridayAudio = new Audio(data.file);
+
+        fridayAudio.volume = 1.0;
+
+        fridayAudio.play()
+        .then(() => {
+            console.log("FRIDAY VOICE PLAYING");
+        })
+        .catch(err => {
+            console.log("VOICE ERROR:", err);
+        });
+
+    } catch(err) {
+
+        console.log("AUDIO FAILURE:", err);
+
+    }
+
+});
+
+
+/* ================= FIX ENTER KEY ================= */
+
+window.addEventListener("load",()=>{
+
+setTimeout(()=>{
+cmd.focus();
+},9500);
+
+});
+
+cmd.addEventListener("keydown",(e)=>{
+
+if(e.key === "Enter"){
+
+e.preventDefault();
+
+sendCmd();
+
+}
+
+});
+
+sendBtn.addEventListener("click",sendCmd);
+
+/* ================= PARTICLES ================= */
+
+for(let i=0;i<90;i++){
+
+let p=document.createElement("div");
+
+p.className="particle";
+
+p.style.left=Math.random()*100+"%";
+
+p.style.animationDuration=(8+Math.random()*15)+"s";
+
+p.style.animationDelay=Math.random()*10+"s";
+
+document.getElementById("particles").appendChild(p);
+
+}
+
+/* ================= STATS ================= */
+
+let cpu = 72;
+let power = 61;
+let neural = 88;
+let temp = 43;
+
+function fluctuate(value,min,max,step){
+
+value += (Math.random()*step*2-step);
+
+if(value<min) value=min;
+if(value>max) value=max;
+
+return value;
+
+}
+
+setInterval(()=>{
+
+cpu = fluctuate(cpu,55,90,2);
+power = fluctuate(power,40,100,1.5);
+neural = fluctuate(neural,70,99,1);
+temp = fluctuate(temp,35,60,1);
+
+cpuText.innerText=Math.round(cpu)+"%";
+powerText.innerText=Math.round(power)+"%";
+neuralText.innerText=Math.round(neural)+"%";
+tempText.innerText=Math.round(temp)+"°";
+
+},1000);
+
+/* ================= FEED ================= */
+
+const feedMessages = [
+"> Neural link stable",
+"> Threat analysis nominal",
+"> Tactical systems synchronized",
+"> Monitoring operator decisions",
+"> Voice synthesis active",
+"> Autonomous logic online",
+"> Neural pathways synchronized",
+"> Operator survival probability acceptable"
+];
+
+setInterval(()=>{
+
+let div=document.createElement("div");
+
+div.innerText =
+feedMessages[Math.floor(Math.random()*feedMessages.length)];
+
+feed.prepend(div);
+
+if(feed.children.length>12){
+feed.removeChild(feed.lastChild);
+}
+
+},2500);
+
+/* ================= AUDIO ================= */
+
+for(let i=0;i<42;i++){
+
+let b=document.createElement("div");
+
+b.className="audioBar";
+
+audio.appendChild(b);
+
+}
+
+function animateAudio(power=80){
+
+let bars=document.querySelectorAll(".audioBar");
+
+let t=0;
+
+let iv=setInterval(()=>{
+
+bars.forEach(bar=>{
+
+bar.style.height=
+(10+Math.random()*power)+"px";
+
+});
+
+t++;
+
+if(t>18){
+
+clearInterval(iv);
+
+bars.forEach(bar=>{
+
+bar.style.height="10px";
+
+});
+
+}
+
+},40);
+
+}
+
+/* ================= HOLOGRAM MESSAGES ================= */
+
+function hologramMessage(prefix,text){
+
+let div=document.createElement("div");
+
+div.className="msg";
+
+let span=document.createElement("span");
+
+span.className="typing";
+
+div.appendChild(span);
+
+chat.appendChild(div);
+
+chat.scrollTop=chat.scrollHeight;
+
+let full = prefix + text;
+
+let i=0;
+
+let iv=setInterval(()=>{
+
+span.innerHTML = full.substring(0,i);
+
+chat.scrollTop=chat.scrollHeight;
+
+i++;
+
+if(i>full.length){
+
+clearInterval(iv);
+
+span.classList.remove("typing");
+
+animateAudio();
+
+}
+
+},18);
+
+}
+
+function addMessage(text){
+hologramMessage("",text);
+}
+
+/* ================= THINKING ================= */
+
+const thoughts = [
+"ANALYZING INPUT...",
+"RUNNING SIMULATIONS...",
+"CALCULATING RESPONSE...",
+"MONITORING SYSTEMS...",
+"PROCESSING HUMAN LOGIC...",
+"NEURAL CORE ACTIVE...",
+"ETHICS MODULE QUESTIONABLE..."
+];
+
+setInterval(()=>{
+
+thinking.innerText =
+thoughts[Math.floor(Math.random()*thoughts.length)];
+
+},4000);
+
+/* ================= SEND ================= */
+
+function sendCmd(){
+
+let text=cmd.value.trim();
+
+if(!text) return;
+
+addMessage("> " + text);
+
+thinking.innerText="PROCESSING COMMAND...";
+
+socket.emit("command",{cmd:text});
+
+cmd.value="";
+
+}
+
+/* ================= STABLE MIC SYSTEM ================= */
+
+const SpeechRecognition =
+window.SpeechRecognition ||
+window.webkitSpeechRecognition;
+
+if(SpeechRecognition){
+
+const recognition = new SpeechRecognition();
+
+recognition.lang = "en-US";
+recognition.continuous = false;
+recognition.interimResults = true;
+recognition.maxAlternatives = 1;
+
+let micActive = false;
+
+async function startListening(){
+
+if(micActive) return;
+
+try{
+
+await navigator.mediaDevices.getUserMedia({
+audio:true
+});
+
+micActive = true;
+
+micBtn.classList.add("listening");
+
+voiceOverlay.classList.add("active");
+
+voiceStatus.innerText = "LISTENING";
+
+thinking.innerText =
+"VOICE CHANNEL OPEN...";
+
+setTimeout(()=>{
+
+recognition.start();
+
+},250);
+
+}
+catch(err){
+
+console.log("MIC ERROR:", err);
+
+addMessage(
+"TARS: Audio subsystem blocked."
+);
+
+thinking.innerText =
+"MICROPHONE FAILURE DETECTED";
+
+}
+
+}
+
+micBtn.addEventListener(
+"click",
+startListening
+);
+
+recognition.onresult = (event)=>{
+
+let transcript = "";
+
+for(
+let i=event.resultIndex;
+i<event.results.length;
+i++
+){
+
+transcript +=
+event.results[i][0].transcript;
+
+}
+
+voiceStatus.innerText =
+transcript.toUpperCase();
+
+if(
+event.results[
+event.results.length - 1
+].isFinal
+){
+
+cmd.value = transcript.trim();
+
+setTimeout(()=>{
+
+sendCmd();
+
+},300);
+
+}
+
+};
+
+recognition.onend = ()=>{
+
+micActive = false;
+
+micBtn.classList.remove("listening");
+
+voiceOverlay.classList.remove("active");
+
+voiceStatus.innerText =
+"VOICE READY";
+
+thinking.innerText =
+"AI THINKING...";
+
+};
+
+recognition.onerror = (event)=>{
+
+console.log(
+"SPEECH ERROR:",
+event.error
+);
+
+micActive = false;
+
+micBtn.classList.remove("listening");
+
+voiceOverlay.classList.remove("active");
+
+voiceStatus.innerText =
+"MIC ERROR";
+
+let msg = "Voice recognition unstable.";
+
+if(event.error === "not-allowed"){
+msg =
+"Microphone access denied.";
+}
+
+if(event.error === "audio-capture"){
+msg =
+"No microphone detected.";
+}
+
+if(event.error === "network"){
+msg =
+"Speech network failure.";
+}
+
+addMessage(
+"TARS: " + msg
+);
+
+thinking.innerText =
+"VOICE SYSTEM ERROR";
+
+};
+
+}
+
+/* ================= RECEIVE ================= */
+
+socket.on("tars_response",(data)=>{
+
+setTimeout(()=>{
+
+hologramMessage("TARS: ", data.text);
+
+thinking.innerText="AI THINKING...";
+
+animateAudio(90);
+
+},600+Math.random()*900);
+
+});
+
+/* ================= TELEMETRY ================= */
+
+socket.on("telemetry",(data)=>{
+
+mode.innerText=data.mode;
+
+battery.innerText=data.battery;
+
+position.innerText=data.position;
+
+});
+
+/* ================= RADAR ================= */
+
+let radar=document.getElementById("radar");
+
+let ctx=radar.getContext("2d");
+
+radar.width=240;
+radar.height=240;
+
+let angle=0;
+
+const radarTargets = [];
+
+for(let i=0;i<6;i++){
+
+radarTargets.push({
+
+x:Math.random()*180+30,
+y:Math.random()*180+30,
+size:Math.random()*3+1
+
+});
+
+}
+
+function drawRadar(){
+
+ctx.clearRect(0,0,240,240);
+
+let cx=120;
+let cy=120;
+
+ctx.strokeStyle="rgba(0,217,255,0.12)";
+
+for(let i=1;i<5;i++){
+
+ctx.beginPath();
+
+ctx.arc(cx,cy,i*25,0,Math.PI*2);
+
+ctx.stroke();
+
+}
+
+let grad=ctx.createRadialGradient(cx,cy,10,cx,cy,100);
+
+grad.addColorStop(0,"rgba(0,217,255,0.2)");
+grad.addColorStop(1,"rgba(0,217,255,0)");
+
+ctx.fillStyle=grad;
+
+ctx.beginPath();
+
+ctx.moveTo(cx,cy);
+
+ctx.arc(cx,cy,100,angle,angle+0.35);
+
+ctx.closePath();
+
+ctx.fill();
+
+ctx.beginPath();
+
+ctx.moveTo(cx,cy);
+
+ctx.lineTo(
+cx+Math.cos(angle)*100,
+cy+Math.sin(angle)*100
+);
+
+ctx.strokeStyle="#00d9ff";
+ctx.lineWidth=2;
+ctx.stroke();
+
+radarTargets.forEach(target=>{
+
+ctx.fillStyle="rgba(0,217,255,0.75)";
+
+ctx.beginPath();
+
+ctx.arc(
+target.x,
+target.y,
+target.size,
+0,
+Math.PI*2
+);
+
+ctx.fill();
+
+});
+
+if(micBtn.classList.contains("listening")){
+
+angle += 0.06;
+
+}else{
+
+angle += 0.02;
+
+}
+
+requestAnimationFrame(drawRadar);
+
+}
+
+drawRadar();
+
+/* ================= BOOT SYSTEM ================= */
+
+const bootLines = [
+
+"[BOOT] Initializing TARS neural matrix...",
+"[OK] Quantum telemetry online",
+"[OK] Voice synthesis active",
+"[OK] Sensor fusion established",
+"[SCAN] Mapping operator biometrics",
+"[AUTH] Operator verified :: AZAZEL",
+"[WARN] Sarcasm limiter disabled",
+"[INFO] Autonomous systems synchronized",
+"[OK] Tactical interface loaded",
+"[INFO] Establishing orbital uplink",
+"[SCAN] Environmental mapping online",
+"[INFO] Neural pathways synchronized",
+"[WARN] Ethics module unstable",
+"[READY] TARS operational"
+
+];
+
+const bootLogs =
+document.getElementById("bootLogs");
+
+const bootBar =
+document.getElementById("bootProgressBar");
+
+const bootPercent =
+document.getElementById("bootPercent");
+
+let bootPtr = 0;
+let progress = 0;
+
+const bootInterval = setInterval(()=>{
+
+if(bootPtr >= bootLines.length){
+
+clearInterval(bootInterval);
+
+bootPercent.innerText = "100%";
+
+return;
+
+}
+
+const line =
+document.createElement("div");
+
+line.innerText =
+bootLines[bootPtr];
+
+line.className =
+"diagnosticLine";
+
+bootLogs.appendChild(line);
+
+bootLogs.scrollTop =
+bootLogs.scrollHeight;
+
+progress += 100 / bootLines.length;
+
+bootBar.style.width =
+progress + "%";
+
+bootPercent.innerText =
+Math.floor(progress) + "%";
+
+bootPtr++;
+
+},550);
+
+/* ================= AI INTERRUPTS ================= */
+
+const interrupts = [
+"Monitoring operator behavior.",
+"You should probably hydrate.",
+"Questionable engineering detected.",
+"Monitoring thermal conditions.",
+"Mission integrity stable.",
+"Warning: operator sleep schedule catastrophic."
+];
+
+setInterval(()=>{
+
+const msg =
+interrupts[
+Math.floor(Math.random()*interrupts.length)
+];
+
+addMessage("TARS: " + msg);
+
+},35000);
+
+/* ================= DIAGNOSTICS ================= */
+
+const diagnostics =
+document.getElementById("diagnostics");
+
+const diagLines = [
+"[INFO] Neural sync stable",
+"[SCAN] Environment mapped",
+"[OK] Tactical systems ready",
+"[WARN] CPU spike detected",
+"[OK] Motion controller synced",
+"[INFO] Monitoring sensor array",
+"[OK] Autonomous routines active",
+"[PING] ESP32 heartbeat stable",
+"[INFO] Core temperature nominal",
+"[WARN] Human decision-making inconsistent"
+];
+
+setInterval(()=>{
+
+const div =
+document.createElement("div");
+
+div.className = "diagnosticLine";
+
+div.innerText =
+diagLines[
+Math.floor(Math.random()*diagLines.length)
+];
+
+diagnostics.prepend(div);
+
+if(diagnostics.children.length > 8){
+diagnostics.removeChild(
+diagnostics.lastChild
+);
+}
+
+},2500);
+
+/* ================= GLITCH ================= */
+
+setInterval(()=>{
+
+if(Math.random() > 0.7){
+
+document.body.classList.add("glitch");
+
+setTimeout(()=>{
+
+document.body.classList.remove("glitch");
+
+},140);
+
+}
+
+},9000);
+
+/* ================= ALERTS ================= */
+
+const alerts = [
+
+"NO CRITICAL THREATS DETECTED",
+"ALL SYSTEMS OPERATIONAL",
+"NEURAL STABILITY WITHIN LIMITS",
+"TACTICAL ARRAY READY",
+"POWER GRID STABLE"
+
+];
+
+setInterval(()=>{
+
+alertBox.innerText =
+alerts[Math.floor(Math.random()*alerts.length)];
+
+},5000);
+
+
+</script>
+
+</body>
+</html>
