@@ -439,13 +439,13 @@ def handle_command(data):
 
     if intent == "FORWARD":
 
-        robot_state["position"][1] += 1
+        robot_state["position"]["y"] += 1
 
         response = random.choice(FORWARD_RESPONSES)
 
     elif intent == "BACKWARD":
 
-        robot_state["position"][1] -= 1
+        robot_state["position"]["y"] -= 1
 
         response = random.choice(BACKWARD_RESPONSES)
 
@@ -481,7 +481,7 @@ def handle_command(data):
 
         response = (
             f"Battery at {battery} percent. "
-            f"Position {pos[0]}, {pos[1]}."
+            f"Position {pos['x']}, {pos['y']}."
         )
 
     # =====================================================

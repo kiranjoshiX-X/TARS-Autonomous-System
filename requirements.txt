@@ -1,0 +1,10 @@
+edge-tts
+flask
+Flask-SocketIO
+matplotlib
+ollama
+playsound
+pygame-ce
+requests
+sounddevice
+vosk
