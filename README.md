@@ -27,6 +27,20 @@ An intelligent, modular, and voice-controlled autonomous robotics platform inspi
 
 ---
 
+## 🔌 Hardware & PCB Design
+
+TARS runs on a custom-designed control board. 
+
+| Schematic Diagram |
+| :---: |
+| ![Schematic](docs/schematic.png) |
+
+| PCB Layout | DRC Verification |
+| :---: | :---: |
+| ![PCB](docs/pcb_layout.png) | ![DRC](docs/drc_verification.png) |
+
+---
+
 ## 🏗️ Architecture & Structure
 
 ```text
