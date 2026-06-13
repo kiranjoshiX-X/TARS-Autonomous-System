@@ -3,40 +3,40 @@
 # CLEAN CENTRAL ORCHESTRATOR
 # =========================
 
-from voice import (
+from voice.voice import (
     listen_command,
     map_command
 )
 
-from tars_voice import (
+from voice.tars_voice import (
     speak,
     tars_response
 )
 
-from logger import (
+from telemetry.logger import (
     init_log,
     log_data
 )
 
-from robot_core import (
+from core.robot_core import (
     execute_command,
     update_battery,
     set_mode
 )
 
-from command_bus import (
+from core.command_bus import (
     send_command,
     get_next_command,
     pending_commands
 )
 
-from robot_core import (
+from core.robot_core import (
     execute_command,
     update_battery,
     set_mode
 )
 
-from state import robot_state
+from core.state import robot_state
 
 import time
 import random

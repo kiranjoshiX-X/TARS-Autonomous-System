@@ -1,7 +1,12 @@
 # test_core.py
 
-from robot_core import execute_command
-from state import robot_state
+import sys
+import os
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+from core.robot_core import execute_command
+from core.state import robot_state
 
 commands = [
 

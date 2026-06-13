@@ -26,7 +26,7 @@ sys.path.append(
     )
 )
 
-from state import robot_state
+from core.state import robot_state
 
 # =========================================================
 # FLASK
@@ -94,14 +94,14 @@ RULES:
 @app.route("/")
 def index():
 
-    with open("index.html", "r", encoding="utf-8") as f:
+    with open(os.path.join(os.path.dirname(__file__), "index.html"), "r", encoding="utf-8") as f:
         return f.read()
 
 @app.route("/static/<path:filename>")
 def static_files(filename):
 
     return send_from_directory(
-        "static",
+        os.path.join(os.path.dirname(__file__), "static"),
         filename
     )
 
@@ -126,10 +126,10 @@ def speak(text):
 
         try:
 
-            if not os.path.exists("static"):
-                os.makedirs("static")
+            if not os.path.exists(os.path.join(os.path.dirname(__file__), "static")):
+                os.makedirs(os.path.join(os.path.dirname(__file__), "static"))
 
-            filename = "static/voice.mp3"
+            filename = os.path.join(os.path.dirname(__file__), "static", "voice.mp3")
 
             # DELETE OLD FILE
             if os.path.exists(filename):

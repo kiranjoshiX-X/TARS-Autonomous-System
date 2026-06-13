@@ -4,9 +4,13 @@
 
 import pygame
 import sys
+import os
 import random
-from voice import listen_command, map_command
-from tars_voice import speak, tars_response
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+from voice.voice import listen_command, map_command
+from voice.tars_voice import speak, tars_response
 
 pygame.init()
 
@@ -207,17 +211,34 @@ while True:
     elif forward_timer > 0:
         direction = pygame.math.Vector2(1, 0).rotate(-angle)
 
-        x += direction.x * speed
-        y += direction.y * speed
+        next_x = x + direction.x * speed
+        next_y = y + direction.y * speed
 
-        x = max(20, min(WIDTH - 20, x))
-        y = max(20, min(HEIGHT - 20, y))
+        # -----------------------------
+        # COLLISION DETECTION
+        # -----------------------------
+        robot_rect = pygame.Rect(next_x - 15, next_y - 15, 30, 30)
+        collided = False
+        
+        for obs in obstacles:
+            if obs.colliderect(robot_rect):
+                collided = True
+                break
+                
+        if collided:
+            forward_timer = 0
+        else:
+            x = next_x
+            y = next_y
 
-        forward_timer -= 1
+            x = max(20, min(WIDTH - 20, x))
+            y = max(20, min(HEIGHT - 20, y))
 
-        trail.append((x, y))
-        if len(trail) > 60:
-            trail.pop(0)
+            forward_timer -= 1
+
+            trail.append((x, y))
+            if len(trail) > 60:
+                trail.pop(0)
 
     # =========================
     # BATTERY

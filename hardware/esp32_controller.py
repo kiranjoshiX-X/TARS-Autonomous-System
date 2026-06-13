@@ -2,20 +2,20 @@
 # esp32_controller.py
 # =========================
 
-from sensors import SensorSystem
+from hardware.sensors import SensorSystem
 
-from comms import (
+from hardware.comms import (
     esp_send,
     esp_receive,
     create_sensor_packet
 )
 
-from robot_core import (
+from core.robot_core import (
     execute_command,
     update_sensors
 )
 
-from state import robot_state
+from core.state import robot_state
 
 sensors = SensorSystem()
 

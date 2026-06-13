@@ -2,17 +2,17 @@
 # pi_controller.py
 # =========================
 
-from comms import (
+from hardware.comms import (
     pi_receive,
     pi_send,
     create_command_packet
 )
 
-from control import update_state
+from hardware.control import update_state
 
 import random
 
-from robot_core import execute_command
+from core.robot_core import execute_command
 
 last_command = None
 

@@ -1,8 +1,0 @@
-__pycache__/
-*.pyc
-*.mp3
-*.wav
-*.zip
-robot_log.csv
-venv/
-.env

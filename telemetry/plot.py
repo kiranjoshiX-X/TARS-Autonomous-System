@@ -5,6 +5,7 @@
 
 import csv
 import matplotlib.pyplot as plt
+import os
 
 # =========================
 # DATA
@@ -20,7 +21,7 @@ actions = []
 # READ LOG
 # =========================
 
-with open("robot_log.csv", "r") as file:
+with open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "robot_log.csv"), "r") as file:
 
     reader = csv.DictReader(file)
 

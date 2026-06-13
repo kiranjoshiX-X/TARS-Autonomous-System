@@ -42,7 +42,9 @@ DEVICE_INDEX = get_mic()
 # =========================
 # MODEL
 # =========================
-model = vosk.Model("vosk-model-small-en-us-0.15")
+import os
+MODEL_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "assets", "vosk-model-small-en-us-0.15")
+model = vosk.Model(MODEL_PATH)
 
 audio_q = queue.Queue()
 command_q = queue.Queue()

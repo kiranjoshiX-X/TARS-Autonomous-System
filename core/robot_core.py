@@ -3,8 +3,8 @@
 # CENTRAL ROBOT CORE
 # =========================
 
-from state import robot_state
-from movement import MovementSystem
+from core.state import robot_state
+from core.movement import MovementSystem
 
 movement = MovementSystem()
 

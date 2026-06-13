@@ -1,7 +1,7 @@
 # comms.py
 
 from queue import Queue, Empty
-from command_bus import send_command
+from core.command_bus import send_command
 import time
 import random
 import time
